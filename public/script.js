@@ -26,6 +26,7 @@ function generateRandomBoard(){
     const newBoard = Array.from({length: BOARD_SIZE}, ()=> Array(BOARD_SIZE).fill(' '));
     console.log(newBoard);
 
+    //Tehdään ulkoseinät
     for(let y =0; y < BOARD_SIZE; y++){
          for(let x =0; x < BOARD_SIZE; x++){
            if (y == 0 || y == BOARD_SIZE-1 || x == 0 || x == BOARD_SIZE-1){
@@ -33,7 +34,12 @@ function generateRandomBoard(){
             }
         }
     }
+
+    //tehdään pelilaudan keskelle esteet
     generateObstacles(newBoard);
+    //newBoard[16][7] = 'P';
+    const [playerX, playerY] = randomEmptyPosition(newBoard);
+    setCell(newBoard, playerX, playerY, 'P')
     return newBoard;
 }
 
@@ -54,6 +60,9 @@ function drawBoard(board){
 
             if(board[y][x] == 'W'){
                 cell.classList.add('wall');
+            }
+            else if(board[y][x] == 'P'){
+                cell.classList.add('player');
             }
             gameBoard.appendChild(cell);
         }
@@ -81,9 +90,11 @@ function generateObstacles(board){
         { startX: 4, startY: 8 },
         { startX: 10, startY: 10 },
         { startX: 13, startY: 14 },
-        { startX: 3, startY: 15 },
+        { startX: 3, startY: 14 },
         { startX: 12, startY: 5 },
         { startX: 10, startY: 12 },
+        { startX: 11, startY: 0 },
+        { startX: 0, startY: 0 },
     ];
 
     //Arvotaan este jokaiseen aloituspisteeseen
@@ -99,4 +110,29 @@ function placeObstacle(board, obstacle, startX, startY) {
         [x,y] = coordinatePair;
         board[startY + y][startX + x] = 'W';
     }
+}
+
+//Apufunctio satunnaisen kokonaisluvun arpomista varten
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomEmptyPosition(board){
+    x = randomInt(1, BOARD_SIZE-2);
+    y = randomInt(1, BOARD_SIZE-2);
+    if (getCell(board, x, y)  === ' ') {
+        return [x, y];
+    } 
+    else {
+        return randomEmptyPosition(board);
+    }
+}
+
+//Asetetaan solun sisältö
+function setCell(board, x, y, value) {
+    board[y][x] = value;
+ }
+//Palautetaan solun sisältö
+function getCell(board, x, y) {
+       return board[y][x];
 }
