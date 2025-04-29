@@ -2,6 +2,7 @@ const BOARD_SIZE = 18;
 const cellSize = calculateCellSize();
 let board;
 let player;
+let ghosts = [];
 
 document.getElementById("new-game-btn").addEventListener('click',startGame);
 document.addEventListener('keydown', (event) => {
@@ -57,15 +58,18 @@ function generateRandomBoard(){
 
     //tehdään pelilaudan keskelle esteet
     generateObstacles(newBoard);
+    generateGhosts(newBoard)
     //newBoard[16][7] = 'P';
     const [playerX, playerY] = randomEmptyPosition(newBoard);
-    setCell(newBoard, playerX, playerY, 'P')
+    setCell(newBoard, playerX, playerY, 'P');
+    player.x = playerX;
+    player.y = playerY;
     return newBoard;
 }
 
 function drawBoard(board){
     const gameBoard = document.getElementById('game-board');
-
+    gameBoard.innerHTML = '';
     const cellSize =calculateCellSize();
 
     gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 1fr)`;
@@ -154,6 +158,16 @@ function randomEmptyPosition(board){
     }
 }
 
+function generateGhosts(board){
+    for (let i = 0; i < 5; i++) {
+        const [ghostX, ghostY] = randomEmptyPosition(board);
+        console.log(ghostX,ghostY);
+        setCell(board, ghostX, ghostY, 'H');
+        ghosts.push(new Ghost(ghostX, ghostY)); // Add each ghost to the list
+        console.log(ghosts);
+    }
+}
+
 //Asetetaan solun sisältö
 function setCell(board, x, y, value) {
     board[y][x] = value;
@@ -180,14 +194,24 @@ class Player{
         const newX = currentX + deltaX;
         const newY = currentY + deltaY;
     
-        // Päivitä pelaajan sijainti
-        player.x = newX;
-        player.y = newY;
-
-        // Päivitä pelikenttä
-        board[currentY][currentX] = ' '; // Tyhjennetään vanha paikka
-        board[newY][newX] = 'P'; // Asetetaan uusi paikka
+        //Tarkista onko paikkatyhjä
+        if(getCell(board, newX, newY) ===' '){
+            // Päivitä pelaajan sijainti
+            player.x = newX;
+            player.y = newY;
         
+
+            // Päivitä pelikenttä
+            board[currentY][currentX] = ' '; // Tyhjennetään vanha paikka
+            board[newY][newX] = 'P'; // Asetetaan uusi paikka
+        }
         drawBoard(board);
+    }
+}
+
+class Ghost{
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
     }
 }
