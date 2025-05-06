@@ -92,3 +92,7 @@ button {
     background-image: url('images/player.png');
     background-size: cover;
 }
+.hornmonster {
+    background-image: url('images/haamu.png');
+    background-size: cover;
+}
