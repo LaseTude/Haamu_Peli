@@ -19,6 +19,18 @@ document.addEventListener('keydown', (event) => {
         case 'ArrowRight':
             player.move(1, 0); // Liikuta oikealle
             break;
+        case 'w':
+            shootAt(player.x, player.y - 1); // shoot up
+            break;
+        case 's':
+            shootAt(player.x, player.y + 1); // shoot down
+            break;
+        case 'a':x
+            shootAt(player.x - 1, player.y); // shoot left
+            break; 
+        case 'd':
+            shootAt(player.x + 1, player.y); // shoot right
+            break;
     }
     event.preventDefault(); // Prevent default scrolling behaviour
 });
@@ -90,6 +102,12 @@ function drawBoard(board){
             }
             else if(board[y][x] == 'H'){
                 cell.classList.add('hornmonster');
+            }
+            else if(board[y][x] == 'B'){
+                cell.classList.add('bullet');
+                setTimeout(() => {
+                    setCell(board, x, y, ' ') 
+                }, 500); // Ammus näkyy 500 ms
             }
             gameBoard.appendChild(cell);
         }
@@ -171,6 +189,7 @@ function generateGhosts(board){
     }
 }
 
+
 //Asetetaan solun sisältö
 function setCell(board, x, y, value) {
     board[y][x] = value;
@@ -180,6 +199,41 @@ function getCell(board, x, y) {
        return board[y][x];
 }
 
+function shootAt(x, y) {
+    if(getCell(board, x, y)==='W'){
+        return;
+    }
+    const ghostIndex = ghosts.findIndex(ghost=> ghost.x === x && ghost.y === y);
+    if (ghostIndex !== -1) {
+        // Remove the ghost from the list
+        ghosts.splice(ghostIndex, 1);
+    }
+    console.log(ghosts);
+    setCell(board, x, y, 'B');
+    drawBoard(board);
+    if (ghosts.length === 0){
+        alert('kaikki ammuttu');
+    }
+}
+
+function moveGhosts(){
+    const oldGhosts = ghosts.map(ghost => ({ x: ghost.x, y: ghost.y }));
+    ghosts.forEach(ghost => {
+        // Määrittele mahdolliset uudet paikat (ylös, alas, vasemmalle, oikealle)
+        const possibleNewPositions = [
+            { x: ghost.x, y: ghost.y - 1 }, // Ylös
+            { x: ghost.x, y: ghost.y + 1 }, // Alas
+            { x: ghost.x - 1, y: ghost.y }, // Vasemmalle
+            { x: ghost.x + 1, y: ghost.y }  // Oikealle
+        ];
+        // Suodata pois paikat, jotka eivät ole pelilaudan sisällä tai ovat seiniä
+        const validNewPositions = possibleNewPositions.filter(newPosition =>
+            newPosition.x >= 0 && newPosition.x < BOARD_SIZE &&
+            newPosition.y >= 0 && newPosition.y < BOARD_SIZE &&
+            board[newPosition.y][newPosition.x] === ' ' // Tarkista, että ruutu on tyhjä
+        );
+    }
+}
 
 class Player{
     constructor(x,y){
