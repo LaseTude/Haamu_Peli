@@ -221,6 +221,8 @@ function shootAt(x, y) {
     drawBoard(board);
     if (ghosts.length === 0){
         alert('kaikki ammuttu');
+        document.getElementById('intro-screen').style.display = 'block';
+        document.getElementById('game-screen').style.display = 'none';
     }
 }
 
